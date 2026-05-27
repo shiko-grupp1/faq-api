@@ -1,38 +1,26 @@
+using FAQ_API.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
-namespace faq_api.Controllers;
+namespace FAQ_API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 public class FaqController : ControllerBase
 {
-    [HttpGet("course/{courseId}")]
-    public IActionResult GetFaqsByCourseId(int courseId)
+    private readonly AppDbContext _context;
+
+    public FaqController(AppDbContext context)
     {
-        var faqs = new[]
-        {
-            new
-            {
-                Id = 1,
-                CourseId = courseId,
-                Title = "What is included in this course?",
-                Answer = "You get access to all lessons, exercises and course material."
-            },
-            new
-            {
-                Id = 2,
-                CourseId = courseId,
-                Title = "How long do I have access?",
-                Answer = "You have access to the course material as long as your account is active."
-            },
-            new
-            {
-                Id = 3,
-                CourseId = courseId,
-                Title = "Can I contact a teacher?",
-                Answer = "Yes, you can contact a teacher through the course messaging feature."
-            }
-        };
+        _context = context;
+    }
+
+    [HttpGet("course/{courseId}")]
+    public async Task<IActionResult> GetFaqsByCourseId(int courseId)
+    {
+        var faqs = await _context.Faqs
+            .Where(f => f.CourseId == courseId)
+            .ToListAsync();
 
         return Ok(faqs);
     }
