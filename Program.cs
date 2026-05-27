@@ -28,7 +28,7 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-    if (!db.Faqs.Any())
+    if (!db.Faqs.Any(f => f.CourseId == 1))
     {
         db.Faqs.AddRange(
             new Faq
